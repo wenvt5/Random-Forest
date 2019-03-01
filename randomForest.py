@@ -5,7 +5,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import export_graphviz
 import pydot
 import matplotlib.pyplot as plt
-import datetime
 
 
 def prepare_data(source_file, target_column_name, test_size):
@@ -87,3 +86,7 @@ def main():
     train_important = train_features[top_2_importances]
     test_important = test_features[top_2_importances]
     rf_most_important = train_and_predict(train_important, test_important, train_labels, test_labels, 1000, 3)
+
+
+if __name__ == '__main__':
+    main()
