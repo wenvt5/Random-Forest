@@ -1,3 +1,5 @@
+"""Forecasting by using random forest in Python sklearn package"""
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -8,6 +10,9 @@ import matplotlib.pyplot as plt
 
 
 def prepare_data(source_file, target_column_name, test_size):
+    """- read data from your local file
+       - split to training data and test data in ratio of 0.75:0.25
+       - Transform the categorical data to quantitative data by using get_dummies"""
     data = pd.read_csv(source_file)
     labels = data[target_column_name]
     # Remove the labels from the features;axis 1 refers to the columns
@@ -21,6 +26,9 @@ def prepare_data(source_file, target_column_name, test_size):
 
 
 def train_and_predict(train_features, test_features, train_labels, test_labels, forest_size, tree_level):
+    """- build a forest model with specification of forest_size and tree_level
+       - fit the model with prepared training data
+       - predict with the prepared testing data and calculate the prediction accuracy"""
     # Instantiate model with 1000 decision trees
     rf = RandomForestRegressor(n_estimators = forest_size, random_state = 42, max_depth = tree_level)
     # Train the model on training data
@@ -40,7 +48,8 @@ def train_and_predict(train_features, test_features, train_labels, test_labels, 
 
 
 def visualize_tree(rf,random_pick,dot_file_name,png_file_name):
-    # Pull out one tree, such as number 5 or number 8, from the forest
+    """- create a dot file for a random picked tree with export_graphviz
+       - convert the dot file to a png file """
     tree = rf.estimators_[random_pick]
     # Export the image to a dot file
     export_graphviz(tree, out_file = dot_file_name, feature_names = features.columns, rounded = True, precision = 1)
@@ -51,7 +60,7 @@ def visualize_tree(rf,random_pick,dot_file_name,png_file_name):
 
 
 def features_importances(rf,feature_list):
-    # Get numerical feature importances
+    """- list the features importance for all the predictors"""
     importances = list(rf.feature_importances_)
     # List of tuples with variable and importance
     feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
@@ -63,7 +72,7 @@ def features_importances(rf,feature_list):
 
 
 def plot_importance(rf,feature_list):
-    # Set the style
+    """- plot the features importance for all the predictors"""
     plt.style.use('fivethirtyeight')
     # list of x locations for plotting
     feature_importances_list = features_importances(rf,feature_list)
@@ -77,6 +86,7 @@ def plot_importance(rf,feature_list):
 
 
 def main():
+    """- train the model, pick the top 2 important predictors to rebuild model """
     [train_features, test_features, train_labels, test_labels,feature_list] = prepare_data("temps.csv","actual",0.25)
     rf = train_and_predict(train_features, test_features, train_labels, test_labels, 1000, 3)
     plot_importance(rf,feature_list)
